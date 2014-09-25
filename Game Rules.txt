@@ -1,0 +1,89 @@
+Rules for eight minute empire
+
+components: 18 cubes and 4 castles per player (max 4), 4 double sided maps, 43 cards, 36 coins, 3 castle tokens, 5 explore tokens, 4 encounter tokens, 1 poison swamp token, 1 starting region token, rule book
+
+coins: silver worth 3, copper worth 1
+
+1: Board setup: make a T shape out of 4 boards (limitations on which ones)
+2: place starting token on region that: is on central board, and has a water connection onto a different board
+3: if playing with 3 players, remove cards marked "4", if playing with 2, remove cards marked "2"
+4: shuffle deck
+5: draw 6 cards, place face up in a row, place card cost card above them
+6: each player picks a color, and places 4 armies on the starting region
+7: player who set up board takes one army from everybody and places them on a region not on the center board
+7b: if two player, alternate placing armies of a third color anywhere until ten are placed
+8: take coins, two players: 12, three players: 11, four players: 9
+9: bid for turn order with coins, only pay if winner, youngest player wins ties, pass to left
+
+the turn
+10: buy card, based on card cost card, shift all other cards down, place top card from deck on end
+11: actions on bottom scroll take effect immediately
+	actions include:
+		place new armies on starting region or where you have a city
+		move armies, sea crossing costs 3 movement
+		build a city
+		destroy army of another player (must have an army on same spot)
+		and/or: if or, pick one, if and, left action first
+	you can chose to not do the action
+12: ability at top of card
+		take effect immediately, even applying to own actions
+		applies for the duration of the game
+		cumulative
+		ex:
+			extra movement
+			extra army
+			-1 movement cost over water, minimum 1
+			elixir
+			gain coins
+			vp per (type of card)
+			vp for (set of cards)
+			vp for coins
+			attack immunity
+			
+			
+13: end of game, when players have certain # of cards
+	2 players, 11 cards
+	3 players, 10 cards
+	4 players, 8 cards
+
+winner = player with most vp
+territory control = you have most armies in that territory
++1 vp/territory controlled
++1 vp/island controlled
++vp from cards
++2vp if have most elixir, if tied, all get +1
+
+
+game variations
+explore tokens: place tokens face up on regions that don't have other tokens. First person to build a city on that region gets the associated bonus.
+	magic spring: +2 elixirs
+	cottage: place an additional army every time you place an army
+	hidden treasure: +1 coin immediately
+	Magic Book: +1 vp, you win ties for vp at end of game
+	Stable: +1 move every time you move
+	optional: poison swamp
+		place explore tokens and poison token upside down
+		player can look at token at end of turn if they control region
+		gain token when you build city
+		poison swamp worth -1 vp
+Citadel tokens: same setup as explore, control of region worth 1 vp
+Encounter tokens: any or all used, same setup
+	rampaging dragon: player to place 7th army (total) on space slays dragon, worth 2 vp
+	magic portals: portal containing regions now border
+	band of rogues: move army on or through region, lose a coin
+alternate board setup: rectangle instead of T shape
+Leader cards:
+	distribute one per player randomly during board setup, place face up in front of you
+	Fairy queen:
+		+1 vp at end if own 3 forrest cards
+		can buy an additional card at end of game, do not perform action
+	bandit king:
+		+1 vp if all armies in play or with Red Sorceress
+		Take coin from player when destroying their army
+	Red Sorceress:
+		start with 5 armies in starting region
+		keep armies you destroy
+		+1 vp / 3 destroyed armies at end
+	White knight:
+		+1 vp / island controlled w/ > 2 regions at end
+		when building a city, place an army also
