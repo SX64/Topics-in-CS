@@ -1,0 +1,27 @@
+Game Play Overview, see rules for more information
+
+Determine number of players
+Select a player to set up the board
+Set up the board
+Place starting region token
+Remove cards from deck, if less than 4 players
+Randomize deck
+Draw 6 cards, place in row above board
+Players pick color
+Place 4 armies on starting region
+Setup player places additional army from each player
+Each player gets coins
+Bid for turn order
+
+The turn
+Buy card
+draw new card, place in row
+Ability takes effect
+Do action on card
+If next player has the maximum number of cards
+	do not play another turn
+next player has a turn
+
+Endgame
+Add up VP
+Winner has most VP

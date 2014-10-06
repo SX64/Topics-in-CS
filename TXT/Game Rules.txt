@@ -1,16 +1,24 @@
 Rules for eight minute empire
 
-components: 18 cubes and 4 castles per player (max 4), 4 double sided maps, 43 cards, 36 coins, 3 castle tokens, 5 explore tokens, 4 encounter tokens, 1 poison swamp token, 1 starting region token, rule book
+components: 18 cubes and 4 castles per player (max 4), 4 double sided maps, 
+43 cards, 36 coins, 3 castle tokens, 5 explore tokens, 4 encounter tokens, 
+1 poison swamp token, 1 starting region token, rule book
 
 coins: silver worth 3, copper worth 1
+
+Overview: 2-4 human players compete against each other to accrue the most
+victory points by game end.
+
+0: Select a player to set up the board (steps 1-5)
 
 1: Board setup: make a T shape out of 4 boards (limitations on which ones)
 2: place starting token on region that: is on central board, and has a water connection onto a different board
 3: if playing with 3 players, remove cards marked "4", if playing with 2, remove cards marked "2"
 4: shuffle deck
 5: draw 6 cards, place face up in a row, place card cost card above them
+
 6: each player picks a color, and places 4 armies on the starting region
-7: player who set up board takes one army from everybody and places them on a region not on the center board
+7: player who set up board takes one army from everybody and places them together on a region not on the center board
 7b: if two player, alternate placing armies of a third color anywhere until ten are placed
 8: take coins, two players: 12, three players: 11, four players: 9
 9: bid for turn order with coins, only pay if winner, youngest player wins ties, pass to left
@@ -40,8 +48,8 @@ the turn
 			vp for coins
 			attack immunity
 			
-			
-13: end of game, when players have certain # of cards
+Endgame			
+13: end of game, when every player has a certain # of cards
 	2 players, 11 cards
 	3 players, 10 cards
 	4 players, 8 cards
