@@ -2,6 +2,7 @@
 import sys
 import os
 from PySide import *
+import Model
 """
 #OS X 10.9.3
 #using PySide 1.2.1
@@ -50,5 +51,14 @@ def main():
 
 if __name__ == '__main__':
 	main()
+	
+"""
+plan for graphics:
+qVerticalLayout, three tall
+	top is cards to purchase
+	middle has horizontal layout, 3 maps
+	bottom has horizontal layout, 1 map in the middle, info on the sides
+popup will ask relevant setup information, or in the beginning it will be passed in through the terminal
+"""
 
 #http://stackoverflow.com/questions/3129322/how-do-i-get-monitor-resolution-in-python
