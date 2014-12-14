@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-cardEffects = ["+1 flight", "+1 army", "+1 movement", "+1 VP per matching type", "+4 VP for all three", "+3 VP for both", "+1 elixer", "+2 elixer", "+3 elixer", "attack immunity", "+2 coins"]
+cardEffects = ["1 flight", "1 army", "1 movement", "1 VP per matching type", "4 VP for all three", "3 VP for both", "1 elixer", "2 elixer", "3 elixer", "attack immunity", "2 coins"]
 
 turnEffects = ["+2 movement", "+3 movement", "+4 movement", "+5 movement", "+6 movement", "+1 castle", "+1 army", "+2 army", "+3 army", "+4 army", "remove army"]
 
-cards = ["Cursed Gargoyles", "Ancient Woods", "Arcane Temple", "Cursed Banchee", "Ancient Tree Spirit", "Arcane Manticore", "Ancient Sage", "Ancient Phonix", "Arcane Sphinx", "Forest Lake ", "Dire Eye", "Cursed Tower", "Dire Ogre", "Dire Giant", "Cursed Mausoleum", "Dire Goblin", "Dire Dragon", "Cursed King", "Night Village", "Noble Knight", "Forest Tree Town", "Night Hydra", "Noble Hills", "Forest Gnome", "Noble Unicorn", "Cursed Graveyard", "Forest Elf", "Forest Pixie", "Mountain Treasury", "White Castle", "Mountain Dwarf", "Dire Stronghold", "Whiter Castle", "Night Wizard"]
+cardNames = ["Cursed Gargoyles", "Ancient Woods", "Arcane Temple", "Cursed Banchee", "Ancient Tree Spirit", "Arcane Manticore", "Ancient Sage", "Ancient Phonix", "Arcane Sphinx", "Forest Lake ", "Dire Eye", "Cursed Tower", "Dire Ogre", "Dire Giant", "Cursed Mausoleum", "Dire Goblin", "Dire Dragon", "Cursed King", "Night Village", "Noble Knight", "Forest Tree Town", "Night Hydra", "Noble Hills", "Forest Gnome", "Noble Unicorn", "Cursed Graveyard", "Forest Elf", "Forest Pixie", "Mountain Treasury", "White Castle", "Mountain Dwarf", "Dire Stronghold", "Whiter Castle", "Night Wizard"]
 
 class castle:
 	def __init__(self, playerNumber):
@@ -48,6 +48,31 @@ class player:
 		self.armies = startingArmies
 		self.coins = startingCoins
 		self.cards = []
+		self.waterMovement = 3
+		self.baseArmies = 0
+		self.baseMovement = 0
+		self.elixer = 0
+	
+	def applyCardEffects(card):
+		effect = card.cardE.split(" ")
+		if effect[-1] == "army":
+			self.armies += int(effect[0])
+		elif effect[-1] == "flight":
+			self.waterMovement -= int(effect[0])
+		elif effect[-1] == "movement":
+			self.baseMovement += int(effect[0])
+		elif effect[-1] == "type":
+			return
+		elif effect[-1] == "three":
+			return
+		elif effect[-1] == "both":
+			return
+		elif effect[-1] == "elixer":
+			self.elixer += int(effect[0])
+		elif effect[-1] == "immunity":
+			return
+		elif effect[-1] == "coins":
+			self.coins += int(effect[0])
 	
 	def removeArmy():
 		self.armies -= 1
