@@ -3,6 +3,7 @@ import sys
 import os
 from PySide import *
 import Model
+import Cards
 """
 #OS X 10.9.3
 #using PySide 1.2.1
@@ -19,30 +20,47 @@ def otherButton():
 	print "this is another button"
 
 
+cards = []
+
+def get_image_directory():
+	folder = os.getcwd()
+	folders = folder.split("/")
+	topics_folder = "/".join(folders[0:folders.index("Topics in CS")+1])
+	image_folder = topics_folder + "/Image Resources/"
+	return image_folder
+	
+	
+
+def populate_cards():
+	for c in Cards.get_cards():
+		cards.append(Model.card(c[0],c[1],c[2],c[3],c[4],c[5]))
+
 
 class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fails
-
+	
 	def __init__(self):
 		super(boardGUI, self).__init__()
+		self.initModel()
 		self.initUI()
 	
 	def layoutSetup(self):
-		imageDirectory = os.getcwd() + "/Images/"	
+		imageDirectory = get_image_directory()
+		cards_directory = imageDirectory + "/Cards/"
+		maps_directory = imageDirectory + "/Maps/"
 	
 		vertical = QtGui.QVBoxLayout()
 		
 		
 		cardsRowOne = QtGui.QHBoxLayout()
 		
-		cards = []
+		UIcards = []
 		
 		for i in range(6):
 			card = QtGui.QLabel(self)
-			cards.append(card)
-			cards[-1].setFixedWidth(200)
-			cards[-1].setFixedHeight(200)
-			cards[-1].setPixmap(QtGui.QPixmap(imageDirectory + "card%s.jpeg" % str(i)))
-			cardsRowOne.addWidget(cards[-1])
+			UIcards.append(card)
+			image_name = "".join(cards[i].name.split(" "))
+			UIcards[-1].setPixmap(QtGui.QPixmap(cards_directory + "%s.jpeg" % image_name))
+			cardsRowOne.addWidget(UIcards[-1])
 			
 			
 			
@@ -53,9 +71,7 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		for i in range(4):
 			map = QtGui.QLabel(self)
 			maps.append(map)
-			maps[-1].setFixedWidth(400)
-			maps[-1].setFixedHeight(200)
-			maps[-1].setPixmap(QtGui.QPixmap(imageDirectory + "/map%s.png" % str(i)))
+			maps[-1].setPixmap(QtGui.QPixmap(maps_directory + "map%s-A.png" % str(i)))
 		
 		
 		
@@ -94,9 +110,14 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		self.setLayout(vertical)
 		
 		
+	def initModel(self):
+		populate_cards()
+		
+		
+		
+		
 	def initUI(self):
 		self.layoutSetup()
-		self.setGeometry(gfxOff, gfxOff, width, height)
 		self.setWindowTitle('Eight Minute Empire: Legends')
 		#self.setWindowIcon(QtGui.QIcon('web.png'))		this for title bar
 		self.show()
