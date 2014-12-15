@@ -36,9 +36,18 @@ def populate_cards():
 	for c in Cards.get_cards():
 		cards.append(Model.card(c[0],c[1],c[2],c[3],c[4],c[5]))
 		random.shuffle(cards)
-	
-def remove_first_card():
-	cards.pop(0)
+
+
+def remove_card(n):
+	return cards.pop(n)
+
+def r_0(): remove_card(0)
+def r_1(): remove_card(1)
+def r_2(): remove_card(2)
+def r_3(): remove_card(3)
+def r_4(): remove_card(4)
+def r_5(): remove_card(5)
+card_removal = [r_0, r_1, r_2, r_3, r_4, r_5]
 
 class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fails
 	
@@ -60,10 +69,30 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 				#end game code here
 				sys.exit()
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	def __init__(self):
 		super(boardGUI, self).__init__()
 		self.initModel()
 		self.initUI()
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	def layoutSetup(self):
 	
@@ -89,7 +118,8 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		for i in range(4):
 			map = QtGui.QLabel(self)
 			maps.append(map)
-			maps[-1].setPixmap(QtGui.QPixmap(self.maps_directory + "map%s-A.png" % str(i)))
+			icon = QtGui.QPixmap(self.maps_directory + "map%s-A.png" % str(i))
+			maps[-1].setPixmap(icon)
 		
 		
 		
@@ -102,15 +132,18 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		
 		subVone = QtGui.QVBoxLayout()
 		
-		otherbtn = QtGui.QPushButton('take first card', self)
-		otherbtn.clicked.connect(remove_first_card)
-		otherbtn.clicked.connect(self.update_card_images)
+		card_selector = QtGui.QHBoxLayout()
+		for i in range(6):
+			card_button = QtGui.QPushButton(str(i+1), self)
+			card_button.clicked.connect(card_removal[i])
+			card_button.clicked.connect(self.update_card_images)
+			card_selector.addWidget(card_button)
 		
 		
 		textArea = QtGui.QLabel(self)
 		textArea.setText("example text for whatever")
 		
-		subVone.addWidget(otherbtn)
+		subVone.addLayout(card_selector)
 		subVone.addWidget(textArea)
 		
 		quitbtn = QtGui.QPushButton('Quit', self)
@@ -127,6 +160,15 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		vertical.addLayout(mapRowTwo)
 		vertical.addLayout(infoRowThree)
 		self.setLayout(vertical)
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 	def initModel(self):
