@@ -11,7 +11,7 @@ card_definition = [
 ["Ancient Tree Spirit","4 army",n,pick_one,"3 elixer",n],
 ["Arcane Manticore","4 army","remove army",both,"one move",n],
 ["Ancient Sage","3 move",n,pick_one,"1 VP per Ancient",n],
-["Ancient Phonix","5 move",n,pick_one,"1 fly",n],
+["Ancient Phoenix","5 move",n,pick_one,"1 fly",n],
 ["Arcane Sphinx","3 army","4 move",pick_one,"1 fly",n],
 ["Forest Lake","2 army","3 move",pick_one,"1 VP per Forest",n],
 ["Dire Eye","4 army",n,pick_one,"fly",n],

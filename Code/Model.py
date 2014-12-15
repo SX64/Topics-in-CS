@@ -34,7 +34,6 @@ class card: #card effects are forever, turn effects only once
 		self.cardE2 = cardEffect2
 		self.type = cardName.split(" ")[0]
 
-
 class player:
 	def __init__(self, playerNumber, startingArmies, startingCoins): #startingArmies = number of armies, ditto for coins
 		self.id = playerNumber

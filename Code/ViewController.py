@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
+import random
 from PySide import *
 import Model
 import Cards
@@ -34,9 +35,30 @@ def get_image_directory():
 def populate_cards():
 	for c in Cards.get_cards():
 		cards.append(Model.card(c[0],c[1],c[2],c[3],c[4],c[5]))
-
+		random.shuffle(cards)
+	
+def remove_first_card():
+	cards.pop(0)
 
 class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fails
+	
+	imageDirectory = get_image_directory()
+	cards_directory = imageDirectory + "/Cards/"
+	maps_directory = imageDirectory + "/Maps/"
+	
+	
+	UIcards = []
+	
+	
+	def update_card_images(self):
+		for i in range(6):
+			try:
+				image_name = cards[i].name.replace(" ","")
+				icon = self.cards_directory + "%s.jpeg" % image_name
+				self.UIcards[i].setPixmap(QtGui.QPixmap(icon))
+			except IndexError:
+				#end game code here
+				sys.exit()
 	
 	def __init__(self):
 		super(boardGUI, self).__init__()
@@ -44,25 +66,21 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		self.initUI()
 	
 	def layoutSetup(self):
-		imageDirectory = get_image_directory()
-		cards_directory = imageDirectory + "/Cards/"
-		maps_directory = imageDirectory + "/Maps/"
 	
 		vertical = QtGui.QVBoxLayout()
 		
 		
 		cardsRowOne = QtGui.QHBoxLayout()
 		
-		UIcards = []
-		
 		for i in range(6):
 			card = QtGui.QLabel(self)
-			UIcards.append(card)
-			image_name = "".join(cards[i].name.split(" "))
-			UIcards[-1].setPixmap(QtGui.QPixmap(cards_directory + "%s.jpeg" % image_name))
-			cardsRowOne.addWidget(UIcards[-1])
-			
-			
+			self.UIcards.append(card)
+			image_name = cards[i].name.replace(" ","")
+			#icon = self.cards_directory + "%s.jpeg" % image_name
+			#self.UIcards[-1].setPixmap(QtGui.QPixmap(icon))
+			cardsRowOne.addWidget(self.UIcards[-1])
+			#see if moving the QLabel along with the card works
+		self.update_card_images()
 			
 		mapRowTwo = QtGui.QHBoxLayout()
 		
@@ -71,7 +89,7 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		for i in range(4):
 			map = QtGui.QLabel(self)
 			maps.append(map)
-			maps[-1].setPixmap(QtGui.QPixmap(maps_directory + "map%s-A.png" % str(i)))
+			maps[-1].setPixmap(QtGui.QPixmap(self.maps_directory + "map%s-A.png" % str(i)))
 		
 		
 		
@@ -84,8 +102,9 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		
 		subVone = QtGui.QVBoxLayout()
 		
-		otherbtn = QtGui.QPushButton('other', self)
-		otherbtn.clicked.connect(otherButton)
+		otherbtn = QtGui.QPushButton('take first card', self)
+		otherbtn.clicked.connect(remove_first_card)
+		otherbtn.clicked.connect(self.update_card_images)
 		
 		
 		textArea = QtGui.QLabel(self)
