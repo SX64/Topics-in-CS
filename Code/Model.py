@@ -34,7 +34,11 @@ class card: #card effects are forever, turn effects only once
 		self.cardE2 = cardEffect2
 		self.type = cardName.split(" ")[0]
 
-class player:
+	def __repr__(self):
+		return self.name
+	
+#player poorly handles turn effects, requires rework
+class player: #how this handles armies is inconsistent, discuss
 	def __init__(self, playerNumber, startingArmies, startingCoins): #startingArmies = number of armies, ditto for coins
 		self.id = playerNumber
 		self.armies = startingArmies
@@ -45,38 +49,75 @@ class player:
 		self.baseMovement = 0
 		self.elixer = 0
 	
-	def applyCardEffects(card):
+	def addArmies(self, amount):
+		self.armies += amount
+	
+	def addCoins(self, amount):
+		self.coins += amount
+	
+	def applyTurnEffects(self, card): #currently assumes player always choses first option
+		teffect = card.turnE.split(" ")
+		type = teffect[1]
+		value = int(teffect[0])
+		if type == "army":
+			return
+		elif type == "move":
+			return
+		elif type == "castle":
+			return
+		
+		if card.bothCardEffects is False:
+			return
+		
+		teffect2 = card.turnE2.split(" ")
+		type = teffect2[1]
+		try:
+			value = int(teffect2[0])
+			if type == "army":
+				return
+			elif type == "move":
+				return
+			elif type == "castle":
+				return
+		except ValueError:
+			#this is for remove army
+			return
+	
+		
+	def applyCardEffects(self, card): #only does first effect
 		effect = card.cardE.split(" ")
-		if effect[-1] == "army":
-			self.armies += int(effect[0])
-		elif effect[-1] == "flight":
-			self.waterMovement -= int(effect[0])
-		elif effect[-1] == "movement":
-			self.baseMovement += int(effect[0])
-		elif effect[-1] == "type":
+		type = effect[1]
+		if type == "immunity":
 			return
-		elif effect[-1] == "three":
-			return
-		elif effect[-1] == "both":
-			return
-		elif effect[-1] == "elixer":
-			self.elixer += int(effect[0])
-		elif effect[-1] == "immunity":
-			return
-		elif effect[-1] == "coins":
-			self.coins += int(effect[0])
+		else:
+			value = int(effect[0])
+			if type == "army":
+				self.baseArmies += value
+			elif type == "fly":
+				self.waterMovement -= value
+			elif type == "move":
+				self.baseMovement += value
+			elif type == "elixer":
+				self.elixer += value
+			elif type == "coins":
+				self.addCoins(value)
+			elif type == "VP":
+				return
+			else:
+				print "you forgot something"
+			if card.cardE2 is not "null":
+				self.addCoins(2)
 	
-	def removeArmy():
-		self.armies -= 1
+	def removeArmies(self, amount):
+		self.armies -= amount
 	
-	def addArmy():
-		self.armies += 1
+	def removeCoins(self, amount):
+		self.coins -= amount
 	
-	def removeCoin():
-		self.coins -= 1
-	
-	def addCoin():
-		self.coins += 1
-	
-	def addCard(card): #card object
-		cards.append(card)
+	def addCard(self, card): #card object
+		self.cards.append(card)
+		self.applyTurnEffects(card)
+		self.applyCardEffects(card)
+		
+	def __repr__(self):
+		return "player %s:\narmies: %s\ncoins %s\ncards: %s\nmovement over water cost: %s\nadditional armies: %s\nadditional movement: %s\nelixer: %s" % (str(self.id), str(self.armies), str(self.coins), str(self.cards), str(self.waterMovement), str(self.baseArmies), str(self.baseMovement), str(self.elixer))

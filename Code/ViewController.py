@@ -17,8 +17,20 @@ width, height = 1300, 600
 
 
 
-def otherButton():
-	print "this is another button"
+players = []
+
+current_player = 0
+
+def change_player():
+	global current_player
+	print players[current_player]
+	b = current_player + 1
+	current_player = b if b < len(players) else 0
+
+def populate_players():
+	for i in range(4):
+		players.append(Model.player(i, 18, 9))
+
 
 
 cards = []
@@ -26,7 +38,7 @@ cards = []
 def get_image_directory():
 	folder = os.getcwd()
 	folders = folder.split("/")
-	topics_folder = "/".join(folders[0:folders.index("Topics in CS")+1])
+	topics_folder = "/".join(folders[0:-2])
 	image_folder = topics_folder + "/Image Resources/"
 	return image_folder
 	
@@ -41,12 +53,37 @@ def populate_cards():
 def remove_card(n):
 	return cards.pop(n)
 
-def r_0(): remove_card(0)
-def r_1(): remove_card(1)
-def r_2(): remove_card(2)
-def r_3(): remove_card(3)
-def r_4(): remove_card(4)
-def r_5(): remove_card(5)
+def r_0():
+	card = remove_card(0)
+	player = players[current_player]
+	player.addCard(card)
+	player.removeCoins(0)
+def r_1():
+	card = remove_card(1)
+	player = players[current_player]
+	player.addCard(card)
+	player.removeCoins(1)
+def r_2():
+	card = remove_card(2)
+	player = players[current_player]
+	player.addCard(card)
+	player.removeCoins(1)
+def r_3():
+	card = remove_card(3)
+	player = players[current_player]
+	player.addCard(card)
+	player.removeCoins(2)
+def r_4():
+	card = remove_card(4)
+	player = players[current_player]
+	player.addCard(card)
+	player.removeCoins(2)
+def r_5():
+	card = remove_card(5)
+	player = players[current_player]
+	player.addCard(card)
+	player.removeCoins(3)
+
 card_removal = [r_0, r_1, r_2, r_3, r_4, r_5]
 
 class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fails
@@ -63,14 +100,16 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		for i in range(6):
 			try:
 				image_name = cards[i].name.replace(" ","")
-				icon = self.cards_directory + "%s.jpeg" % image_name
+				icon = "%s%s.jpeg" % (self.cards_directory, image_name)
 				self.UIcards[i].setPixmap(QtGui.QPixmap(icon))
 			except IndexError:
-				#end game code here
+				for p in players:
+					print p
 				sys.exit()
 	
 	
-	
+	def end_turn(self):
+		change_player()
 	
 	
 	
@@ -146,13 +185,19 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		subVone.addLayout(card_selector)
 		subVone.addWidget(textArea)
 		
+		
+		subVtwo = QtGui.QVBoxLayout()
 		quitbtn = QtGui.QPushButton('Quit', self)
 		quitbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
 		
+		EndTurnbtn = QtGui.QPushButton('End Turn', self)
+		EndTurnbtn.clicked.connect(self.end_turn)
+		subVtwo.addWidget(quitbtn)
+		subVtwo.addWidget(EndTurnbtn)
 		
 		infoRowThree.addLayout(subVone)
 		infoRowThree.addWidget(maps[-1])
-		infoRowThree.addWidget(quitbtn)
+		infoRowThree.addLayout(subVtwo)
 		
 		
 		
@@ -173,7 +218,7 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		
 	def initModel(self):
 		populate_cards()
-		
+		populate_players()
 		
 		
 		
