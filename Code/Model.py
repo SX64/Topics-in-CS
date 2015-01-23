@@ -39,9 +39,12 @@ class card: #card effects are forever, turn effects only once
 	
 #player poorly handles turn effects, requires rework
 class player: #how this handles armies is inconsistent, discuss
-	def __init__(self, playerNumber, startingArmies, startingCoins): #startingArmies = number of armies, ditto for coins
+	def __init__(self, playerNumber, startingCoins):
 		self.id = playerNumber
-		self.armies = startingArmies
+		self.has_taken_card = False
+		self.armies = 0
+		self.move = 0
+		self.castle = 0
 		self.coins = startingCoins
 		self.cards = []
 		self.waterMovement = 3
@@ -60,11 +63,11 @@ class player: #how this handles armies is inconsistent, discuss
 		type = teffect[1]
 		value = int(teffect[0])
 		if type == "army":
-			return
+			self.armies += value
 		elif type == "move":
-			return
+			self.move += value
 		elif type == "castle":
-			return
+			self.castle += value
 		
 		if card.bothCardEffects is False:
 			return
@@ -74,15 +77,14 @@ class player: #how this handles armies is inconsistent, discuss
 		try:
 			value = int(teffect2[0])
 			if type == "army":
-				return
+				self.armies += value
 			elif type == "move":
-				return
+				self.move += value
 			elif type == "castle":
-				return
+				self.castle += value
 		except ValueError:
 			#this is for remove army
 			return
-	
 		
 	def applyCardEffects(self, card): #only does first effect
 		effect = card.cardE.split(" ")
@@ -115,9 +117,19 @@ class player: #how this handles armies is inconsistent, discuss
 		self.coins -= amount
 	
 	def addCard(self, card): #card object
+		self.has_taken_card = True
 		self.cards.append(card)
 		self.applyTurnEffects(card)
 		self.applyCardEffects(card)
 		
+	def clear(self):
+		self.armies = 0
+		self.move = 0
+		self.castle = 0
+		self.has_taken_card = False
+		
 	def __repr__(self):
-		return "player %s:\narmies: %s\ncoins %s\ncards: %s\nmovement over water cost: %s\nadditional armies: %s\nadditional movement: %s\nelixer: %s" % (str(self.id), str(self.armies), str(self.coins), str(self.cards), str(self.waterMovement), str(self.baseArmies), str(self.baseMovement), str(self.elixer))
+		return "\nplayer: %s\ncoins %s\ncards: %s\nmovement over water cost: %s\nadditional armies: %s\nadditional movement: %s\nelixer: %s\n" % (str(self.id), str(self.coins), str(self.cards), str(self.waterMovement), str(self.baseArmies), str(self.baseMovement), str(self.elixer))
+	
+	def turn_print(self):
+		return "\nplayer: %s\narmies: %s\nmove: %s\nmost recent card: %s\n" % (str(self.id), str(self.armies), str(self.move), str(self.cards[-1]))

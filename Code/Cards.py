@@ -20,7 +20,7 @@ card_definition = [
 ["Dire Giant"         ,"3 army"  ,"r army"  ,both    ,"attack immunity"       ,n],
 ["Cursed Mausoleum"   ,"1 castle",n         ,pick_one,"1 move"                ,n],
 ["Dire Goblin"        ,"5 move"  ,n         ,pick_one,"1 elixer"              ,n],
-["Dire Dragon"        ,"3 army"  ,"r army"  ,both    ,"fly"                   ,n],
+["Dire Dragon"        ,"3 army"  ,"r army"  ,both    ,"1 fly"                 ,n],
 ["Cursed King"        ,"3 army"  ,"4 move"  ,pick_one,"1 elixer"              ,n],
 ["Night Village"      ,"1 castle",n         ,pick_one,"1 army"                ,n],
 ["Noble Knight"       ,"4 army"  ,"r army"  ,both    ,"1 move"                ,n],

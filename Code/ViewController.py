@@ -6,31 +6,34 @@ from PySide import *
 import Model
 import Cards
 """
-#OS X 10.9.3
+#OS X 10.9
 #using PySide 1.2.1
 #using Qt 4.8.6
 #chmod +x this file, then cd [wherever this is], ./Risk2210.py
 """
-
-gfxOff = 40
-width, height = 1300, 600
-
 
 
 players = []
 
 current_player = 0
 
+def get_current_player():
+	return players[current_player]
+
 def change_player():
 	global current_player
-	print players[current_player]
+	old_player = get_current_player()
+	old_player.clear()
+	print old_player
 	b = current_player + 1
 	current_player = b if b < len(players) else 0
 
 def populate_players():
 	for i in range(4):
-		players.append(Model.player(i, 18, 9))
+		players.append(Model.player(i, 9))
 
+def print_current_player():
+	print players[current_player].turn_print()
 
 
 cards = []
@@ -50,51 +53,27 @@ def populate_cards():
 		random.shuffle(cards)
 
 
-def remove_card(n):
-	return cards.pop(n)
 
-def r_0():
-	card = remove_card(0)
-	player = players[current_player]
-	player.addCard(card)
-	player.removeCoins(0)
-def r_1():
-	card = remove_card(1)
-	player = players[current_player]
-	player.addCard(card)
-	player.removeCoins(1)
-def r_2():
-	card = remove_card(2)
-	player = players[current_player]
-	player.addCard(card)
-	player.removeCoins(1)
-def r_3():
-	card = remove_card(3)
-	player = players[current_player]
-	player.addCard(card)
-	player.removeCoins(2)
-def r_4():
-	card = remove_card(4)
-	player = players[current_player]
-	player.addCard(card)
-	player.removeCoins(2)
-def r_5():
-	card = remove_card(5)
-	player = players[current_player]
-	player.addCard(card)
-	player.removeCoins(3)
-
-card_removal = [r_0, r_1, r_2, r_3, r_4, r_5]
 
 class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fails
-	
+	#initial setup code
 	imageDirectory = get_image_directory()
 	cards_directory = imageDirectory + "/Cards/"
 	maps_directory = imageDirectory + "/Maps/"
 	
 	
+	#Card methods
 	UIcards = []
 	
+	def remove_card(self):
+		player = get_current_player()
+		if player.has_taken_card:
+			return
+		costs = [0,1,1,2,2,3]
+		n = int(self.sender().text()) - 1
+		card = cards.pop(n)
+		player.addCard(card)
+		player.removeCoins(costs[n])
 	
 	def update_card_images(self):
 		for i in range(6):
@@ -108,50 +87,31 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 				sys.exit()
 	
 	
-	def end_turn(self):
-		change_player()
 	
-	
-	
-	
-	
-	
-	
-	
-	def __init__(self):
-		super(boardGUI, self).__init__()
-		self.initModel()
-		self.initUI()
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	def layoutSetup(self):
-	
-		vertical = QtGui.QVBoxLayout()
-		
-		
-		cardsRowOne = QtGui.QHBoxLayout()
+	#UI setup methods
+	def cards_row(self):
+		row = QtGui.QHBoxLayout()
 		
 		for i in range(6):
 			card = QtGui.QLabel(self)
 			self.UIcards.append(card)
 			image_name = cards[i].name.replace(" ","")
-			#icon = self.cards_directory + "%s.jpeg" % image_name
-			#self.UIcards[-1].setPixmap(QtGui.QPixmap(icon))
-			cardsRowOne.addWidget(self.UIcards[-1])
+			row.addWidget(self.UIcards[-1])
 			#see if moving the QLabel along with the card works
 		self.update_card_images()
-			
-		mapRowTwo = QtGui.QHBoxLayout()
 		
+		return row
+	
+	def card_buttons(self):
+		card_selector = QtGui.QHBoxLayout()
+		for i in range(6):
+			card_button = QtGui.QPushButton(str(i+1), self)
+			card_button.clicked.connect(self.remove_card)
+			card_button.clicked.connect(self.update_card_images)
+			card_selector.addWidget(card_button)
+		return card_selector
+	
+	def get_maps(self):
 		maps = []
 		
 		for i in range(4):
@@ -159,31 +119,32 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 			maps.append(map)
 			icon = QtGui.QPixmap(self.maps_directory + "map%s-A.png" % str(i))
 			maps[-1].setPixmap(icon)
+			
+		return maps
+	
+	def map_grid(self):
+		maps_etc = QtGui.QGridLayout()
 		
-		
-		
+		maps = self.get_maps()
 		for i in range(3):
-			mapRowTwo.addWidget(maps[i])
+			maps_etc.addWidget(maps[i], 0, i)
+		maps_etc.addWidget(maps[3], 1, 1)
 		
 		
-		
-		infoRowThree = QtGui.QHBoxLayout()
 		
 		subVone = QtGui.QVBoxLayout()
 		
-		card_selector = QtGui.QHBoxLayout()
-		for i in range(6):
-			card_button = QtGui.QPushButton(str(i+1), self)
-			card_button.clicked.connect(card_removal[i])
-			card_button.clicked.connect(self.update_card_images)
-			card_selector.addWidget(card_button)
+		card_selector = self.card_buttons()
 		
 		
-		textArea = QtGui.QLabel(self)
-		textArea.setText("example text for whatever")
+		#textArea = QtGui.QLabel(self)
+		#textArea.setText("example text for whatever")
+		
+		print_p_btn = QtGui.QPushButton('Print Player', self)
+		print_p_btn.clicked.connect(print_current_player)
 		
 		subVone.addLayout(card_selector)
-		subVone.addWidget(textArea)
+		subVone.addWidget(print_p_btn)
 		
 		
 		subVtwo = QtGui.QVBoxLayout()
@@ -192,30 +153,35 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		
 		EndTurnbtn = QtGui.QPushButton('End Turn', self)
 		EndTurnbtn.clicked.connect(self.end_turn)
+		
+		
+		
 		subVtwo.addWidget(quitbtn)
 		subVtwo.addWidget(EndTurnbtn)
 		
-		infoRowThree.addLayout(subVone)
-		infoRowThree.addWidget(maps[-1])
-		infoRowThree.addLayout(subVtwo)
+		maps_etc.addLayout(subVone, 1, 0)
+		maps_etc.addLayout(subVtwo, 1, 2)
 		
-		
-		
-		vertical.addLayout(cardsRowOne)
-		vertical.addLayout(mapRowTwo)
-		vertical.addLayout(infoRowThree)
+		return maps_etc
+	
+	def layoutSetup(self):
+		vertical = QtGui.QVBoxLayout()
+		vertical.addLayout(self.cards_row())
+		vertical.addLayout(self.map_grid())
 		self.setLayout(vertical)
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	
+	
+	
+	#Non-UI methods
+	def end_turn(self):
+		change_player()
+	
+	def __init__(self):
+		super(boardGUI, self).__init__()
+		self.initModel()
+		self.initUI()
+	
+	
 	def initModel(self):
 		populate_cards()
 		populate_players()
