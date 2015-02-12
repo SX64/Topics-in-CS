@@ -46,7 +46,8 @@ class player: #how this handles armies is inconsistent, discuss
 		self.move = 0
 		self.castle = 0
 		self.coins = startingCoins
-		self.cards = []
+		#cannot be empty or turn print fails if you haven't drawn a card
+		self.cards = [0]
 		self.waterMovement = 3
 		self.baseArmies = 0
 		self.baseMovement = 0

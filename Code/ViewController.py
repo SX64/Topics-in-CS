@@ -5,6 +5,7 @@ import random
 from PySide import *
 import Model
 import Cards
+import Maps
 """
 #OS X 10.9
 #using PySide 1.2.1
@@ -89,6 +90,45 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 	
 	
 	#UI setup methods
+	button_grids = []
+	
+	#this is a real kludge of a method
+	def get_button_location(self):
+		pushed_button = self.sender()
+		location = [0,0,0]
+		for i in range(4):
+			working_grid = self.button_grids[i]
+			items = working_grid.count()
+			for j in range(items):
+				widget = working_grid.itemAt(j).widget()#itemAt returns QWidgetItem
+				if widget is pushed_button:
+					width = working_grid.columnCount()
+					x = j%width
+					y = j//width
+					location = [i,x,y]
+					break
+		print location
+		return location
+	
+	def buttons_grid(self):
+		button_grid = QtGui.QGridLayout()
+		for i in range(6):
+			for j in range(10):
+				button = QtGui.QPushButton('', self)
+				#button.setFlat(True)
+				button.setMaximumWidth(28) #size of map/10, approx
+				button.clicked.connect(self.get_button_location)
+				button_grid.addWidget(button, i, j)
+		self.button_grids.append(button_grid)
+		return button_grid
+	
+	
+	#don't use this, causes buttons to go behind the maps, don't know why
+	def b_grids(self):
+		for i in range(4):
+			grid = self.buttons_grid()
+			self.button_grids.append(grid)
+	
 	def cards_row(self):
 		row = QtGui.QHBoxLayout()
 		
@@ -106,32 +146,41 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		card_selector = QtGui.QHBoxLayout()
 		for i in range(6):
 			card_button = QtGui.QPushButton(str(i+1), self)
+			card_button.setMaximumWidth(45)
 			card_button.clicked.connect(self.remove_card)
 			card_button.clicked.connect(self.update_card_images)
 			card_selector.addWidget(card_button)
 		return card_selector
 	
 	def get_maps(self):
-		maps = []
-		
+		maps = Maps.get_maps()
+		random.shuffle(maps)
+		map_images = []
 		for i in range(4):
 			map = QtGui.QLabel(self)
-			maps.append(map)
-			icon = QtGui.QPixmap(self.maps_directory + "map%s-A.png" % str(i))
-			maps[-1].setPixmap(icon)
+			map_images.append(map)
+			#icon = QtGui.QPixmap(self.maps_directory + "map%s-A.png" % str(i))
+			icon = QtGui.QPixmap("%s%s.png" % (self.maps_directory, maps[i][0]))
+			map_images[-1].setPixmap(icon)
 			
-		return maps
+		return map_images
 	
 	def map_grid(self):
 		maps_etc = QtGui.QGridLayout()
 		
+		
+		#main maps
 		maps = self.get_maps()
 		for i in range(3):
+			grid = self.buttons_grid() #grid added to list when generated
 			maps_etc.addWidget(maps[i], 0, i)
+			maps_etc.addLayout(grid, 0, i)
 		maps_etc.addWidget(maps[3], 1, 1)
+		final_grid = self.buttons_grid()
+		maps_etc.addLayout(final_grid, 1, 1)
 		
 		
-		
+		#left info area
 		subVone = QtGui.QVBoxLayout()
 		
 		card_selector = self.card_buttons()
@@ -146,7 +195,7 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		subVone.addLayout(card_selector)
 		subVone.addWidget(print_p_btn)
 		
-		
+		#right info area
 		subVtwo = QtGui.QVBoxLayout()
 		quitbtn = QtGui.QPushButton('Quit', self)
 		quitbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
@@ -154,11 +203,11 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		EndTurnbtn = QtGui.QPushButton('End Turn', self)
 		EndTurnbtn.clicked.connect(self.end_turn)
 		
-		
-		
 		subVtwo.addWidget(quitbtn)
 		subVtwo.addWidget(EndTurnbtn)
 		
+		
+		#adding stuff
 		maps_etc.addLayout(subVone, 1, 0)
 		maps_etc.addLayout(subVtwo, 1, 2)
 		
