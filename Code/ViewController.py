@@ -6,12 +6,35 @@ from PySide import *
 import Model
 import Cards
 import Maps
+import ButtonExtension
+
 """
 #OS X 10.9
 #using PySide 1.2.1
 #using Qt 4.8.6
 #chmod +x this file, then cd [wherever this is], ./Risk2210.py
 """
+
+def clickable(widget):
+
+    class Filter(QObject):
+    
+        clicked = pyqtSignal()
+        
+        def eventFilter(self, obj, event):
+        
+            if obj == widget:
+                if event.type() == QEvent.MouseButtonRelease:
+                    if obj.rect().contains(event.pos()):
+                        self.clicked.emit()
+                        # The developer can opt for .emit(obj) to get the object within the slot.
+                        return True
+            
+            return False
+    
+    filter = Filter(widget)
+    widget.installEventFilter(filter)
+    return filter.clicked
 
 
 players = []
@@ -90,44 +113,59 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 	
 	
 	#UI setup methods
-	button_grids = []
+	def get_click_location(self):
+		print "spleen"
 	
-	#this is a real kludge of a method
 	def get_button_location(self):
 		pushed_button = self.sender()
-		location = [0,0,0]
-		for i in range(4):
-			working_grid = self.button_grids[i]
-			items = working_grid.count()
-			for j in range(items):
-				widget = working_grid.itemAt(j).widget()#itemAt returns QWidgetItem
-				if widget is pushed_button:
-					width = working_grid.columnCount()
-					x = j%width
-					y = j//width
-					location = [i,x,y]
-					break
-		print location
-		return location
+		print pushed_button.location_info
 	
-	def buttons_grid(self):
+	def buttons_grid(self,num):
+		scale_options = [[8,12,12,0],[10,15,12,0],[20,30,10,0]]
+		scaling = 0
+		flat_buttons = True
+		image_size = [300,200] #x,y
+		num_buttons_vertical = scale_options[scaling][0]
+		num_buttons_horizontal = scale_options[scaling][1]
+		
+		
+		
+		button_width = Maps.maps_image_size[0]//num_buttons_horizontal +1
+		button_height = Maps.maps_image_size[1]//num_buttons_vertical
+		#one pixel border around buttons, not sure why only horizontal
+		button_spacing = scale_options[scaling][2 if not flat_buttons else 3]
+		#no idea why the flat/not flat spacing difference
+		
 		button_grid = QtGui.QGridLayout()
-		for i in range(6):
-			for j in range(10):
-				button = QtGui.QPushButton('', self)
-				#button.setFlat(True)
-				button.setMaximumWidth(28) #size of map/10, approx
+		button_grid.setHorizontalSpacing(button_spacing)
+		button_grid.setVerticalSpacing(button_spacing)
+		
+		
+		for i in range(num_buttons_vertical):
+			for j in range(num_buttons_horizontal):
+				location_list = [num,i,j]
+				button = ButtonExtension.SuperButton(location_list,'',self)
+				button.setFlat(flat_buttons)
+				button.setMaximumWidth(button_width)
+				button.setMaximumHeight(button_height)
 				button.clicked.connect(self.get_button_location)
 				button_grid.addWidget(button, i, j)
-		self.button_grids.append(button_grid)
+				
+		
+		#experimental, currently slower than nested loop
+		"""
+		for x in range(num_buttons_vertical*num_buttons_horizontal):
+			i = x//num_buttons_horizontal
+			j = x%num_buttons_horizontal
+			location_list = [num,i,j]
+			button = ButtonExtension.SuperButton(location_list,'',self)
+			button.setFlat(flat_buttons)
+			button.setMaximumWidth(button_width)
+			button.setMaximumHeight(button_height)
+			button.clicked.connect(self.alternate_button_location)
+			button_grid.addWidget(button, i, j)"""
+		
 		return button_grid
-	
-	
-	#don't use this, causes buttons to go behind the maps, don't know why
-	def b_grids(self):
-		for i in range(4):
-			grid = self.buttons_grid()
-			self.button_grids.append(grid)
 	
 	def cards_row(self):
 		row = QtGui.QHBoxLayout()
@@ -171,13 +209,12 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		
 		#main maps
 		maps = self.get_maps()
-		for i in range(3):
-			grid = self.buttons_grid() #grid added to list when generated
-			maps_etc.addWidget(maps[i], 0, i)
-			maps_etc.addLayout(grid, 0, i)
-		maps_etc.addWidget(maps[3], 1, 1)
-		final_grid = self.buttons_grid()
-		maps_etc.addLayout(final_grid, 1, 1)
+		for i in range(4):
+			#grid = self.buttons_grid(i)
+			y = i//3
+			x = i%3 + y
+			maps_etc.addWidget(maps[i], y, x)
+			#maps_etc.addLayout(grid, y, x)
 		
 		
 		#left info area

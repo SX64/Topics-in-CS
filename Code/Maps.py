@@ -9,5 +9,7 @@ maps_definition = [
 ["Map3-B"]
 ]
 
+maps_image_size = [295,200] #[x,y]
+
 def get_maps():
 	return maps_definition
