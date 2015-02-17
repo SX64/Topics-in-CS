@@ -6,23 +6,6 @@ class army:
 	def __init__(self, playerNumber):
 		self.owner = playerNumber
 
-class location:
-	def __init__(self, startingArmies, startingToken): #startingArmies = array of armies
-		self.armies = startingArmies
-		self.token = startingToken
-	
-	def removeArmy(playerNumber):
-		for i in len(armies):
-			if armies[i].owner == playerNumber:
-				armies.remove(armies[i])
-				break
-	
-	def addArmy(playerNumber):
-		armies.add(army(playerNumber))
-	
-	def addCastle(playerNumber):
-		self.castle = castle(playerNumber)
-
 
 class card: #card effects are forever, turn effects only once
 	def __init__(self, cardName, turnEffect, turnEffect2, both, cardEffect, cardEffect2):
@@ -47,7 +30,7 @@ class player: #how this handles armies is inconsistent, discuss
 		self.castle = 0
 		self.coins = startingCoins
 		#cannot be empty or turn print fails if you haven't drawn a card
-		self.cards = [0]
+		self.cards = ["blank_card"]
 		self.waterMovement = 3
 		self.baseArmies = 0
 		self.baseMovement = 0
@@ -130,7 +113,7 @@ class player: #how this handles armies is inconsistent, discuss
 		self.has_taken_card = False
 		
 	def __repr__(self):
-		return "\nplayer: %s\ncoins %s\ncards: %s\nmovement over water cost: %s\nadditional armies: %s\nadditional movement: %s\nelixer: %s\n" % (str(self.id), str(self.coins), str(self.cards), str(self.waterMovement), str(self.baseArmies), str(self.baseMovement), str(self.elixer))
+		return "player: %s\ncoins %s\ncards: %s\nmovement over water cost: %s\nadditional armies: %s\nadditional movement: %s\nelixer: %s\n" % (self.id, self.coins, self.cards, self.waterMovement, self.baseArmies, self.baseMovement, self.elixer)
 	
 	def turn_print(self):
-		return "\nplayer: %s\narmies: %s\nmove: %s\nmost recent card: %s\n" % (str(self.id), str(self.armies), str(self.move), str(self.cards[-1]))
+		return "\nplayer: %s\narmies: %s\nmove: %s\nmost recent card: %s\n" % (self.id, self.armies, self.move, self.cards[-1])
