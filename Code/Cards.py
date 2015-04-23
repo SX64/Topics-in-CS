@@ -33,10 +33,10 @@ card_definition = [
 ["Forest Elf"         ,"3 army"  ,"2 move"  ,pick_one,"1 army"                ,n],
 ["Forest Pixie"       ,"4 move"  ,n         ,pick_one,"1 army"                ,n],
 ["Mountain Treasury"  ,"3 move"  ,n         ,pick_one,"1 elixer"              ,"2 coin"],
-["White Castle"       ,"3 army"  ,"1 castle",pick_one,"1 elixer"              ,n],
+["Whiter Castle"       ,"3 army"  ,"1 castle",pick_one,"1 elixer"              ,n],
 ["Mountain Dwarf"     ,"2 army"  ,"r army"  ,both    ,"3 VP for both Mountain",n],
 ["Dire Stronghold"    ,"1 castle",n         ,pick_one,"1 VP per Dire"         ,n],
-["Whiter Castle"      ,"3 move"  ,"1 castle",both    ,"1 elixer"              ,n],
+["White Castle"      ,"3 move"  ,"1 castle",both    ,"1 elixer"              ,n],
 ["Night Wizard"       ,"3 army"  ,"r army"  ,both    ,"1 VP per Night"        ,n]
 ]
 

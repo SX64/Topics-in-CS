@@ -30,12 +30,6 @@ class location:
 
 
 class Map(QtGui.QLabel):
-	#map_locations = []
-	#map_data = 0
-	#map_index = -1
-	#putting stuff up here causes errors
-	#can go into more detail
-	
 	def __init__(self, map_data_input, map_number):
 		QtGui.QLabel.__init__(self)
 		self.map_data = map_data_input

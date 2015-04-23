@@ -59,21 +59,19 @@ def populate_players():
 def print_current_player():
 	print players[current_player].turn_print()
 
-
 cards = []
 
 def get_image_directory():
-	folder = os.getcwd()
+	folder = os.path.dirname(os.path.abspath(__file__))
 	folders = folder.split("/")
 	topics_folder = "/".join(folders[0:-2])
 	image_folder = topics_folder + "/Image Resources/"
 	return image_folder
 
 def populate_cards():
-	for c in Cards.get_cards():
-		cards.append(Model.card(c[0],c[1],c[2],c[3],c[4],c[5]))
-		random.shuffle(cards)
-
+	global cards
+	cards = map(lambda c: Model.card(c).get(), Cards.get_cards())
+	random.shuffle(cards)
 
 
 
@@ -83,47 +81,137 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 	imageDirectory = get_image_directory()
 	cards_directory = imageDirectory + "/Cards/"
 	maps_directory = imageDirectory + "/Maps/"
+	map_objects = []
 	
 	def update_text_bar(self):
-		self.text_bar.setText("changed")
+		self.text_bar.setText("Current Player: %s" % current_player)
 	
 	
 	#map methods
+	
+	selected_territory = 0
+	
 	def click_on_map(self, map):
-		clicked_map_index = map.map_index
-		clicked_location = -1
-		clicked_loc_index = -1
+		player = get_current_player()
 		
 		def add_army_to_location():
-			clicked_location.add_army(current_player)
+			clicked_location.add_army(player.id)
+			player.armies -= 1
+			selected_territory = 0
 		
 		def print_loc_info():
 			printout = (clicked_map_index, clicked_loc_index, clicked_location.armies)
 			print "map index: %s location index: %s armies: %s" % printout
 		
-		##find the clicked location
+		def move_armies():
+			#selecting a territory
+			if self.selected_territory == 0:
+				if clicked_location.armies[player.id] < 1:
+					print "select a territory that has your armies"
+					return
+				else:
+					self.selected_territory = [clicked_map_index,clicked_loc_index]
+					
+					
+					
+			#moving the army
+			else:
+				s = self.selected_territory
+				move_from_loc = self.map_objects[s[0]].map_locations[s[1]]
+				move_from_map_index = s[0]
+				e_borders = move_from_loc.external_borders
+				
+				if clicked_map_index == move_from_map_index: #on same map
+					if clicked_loc_index in move_from_loc.land_borders:
+						move_from_loc.armies[player.id] -= 1
+						clicked_location.armies[player.id] += 1
+						self.selected_territory = 0
+						player.move -= 1
+					elif clicked_loc_index in move_from_loc.sea_borders:
+						if player.move < player.waterMovement: return
+						move_from_loc.armies[player.id] -= 1
+						clicked_location.armies[player.id] += 1
+						self.selected_territory = 0
+						player.move -= player.waterMovement
+				
+				elif e_borders != []:
+					valid = False
+					
+					if player.move < player.waterMovement: return
+					east,north,west,south = [0,1,2,3]
+					#external borders: ENWS, 0,1,2,3
+					#need to check if clicked location has correct external border
+					#get correct map for from border, check against clicked
+					#get opposite direction border, check if location has that border
+					if move_from_map_index == 0 and east in e_borders: #left, east
+						if clicked_map_index == 1:
+							if west in clicked_location.external_borders:
+								valid = True
+					elif move_from_map_index == 2 and west in e_borders: #right, west
+						if clicked_map_index == 1:
+							if east in clicked_location.external_borders:
+								valid = True
+					elif move_from_map_index == 3 and north in e_borders: #bottom, north
+						if clicked_map_index == 1:
+							if south in clicked_location.external_borders:
+								valid = True
+					elif move_from_map_index == 1: # center map
+						if clicked_map_index == 0 and west in e_borders:
+							if east in clicked_location.external_borders:
+								valid = True
+						if clicked_map_index == 2 and east in e_borders:
+							if west in clicked_location.external_borders:
+								valid = True
+						if clicked_map_index == 3 and south in e_borders:
+							if north in clicked_location.external_borders:
+								valid = True
+					
+					if not valid: return
+					
+					move_from_loc.armies[player.id] -= 1
+					clicked_location.armies[player.id] += 1
+					self.selected_territory = 0
+					player.move -= player.waterMovement
 		
-		#qpoint, relative to top left corner of map
-		mouseXY = map.mapFromGlobal(QtGui.QCursor.pos())
+		
+		
+		
+		
+		clicked_map_index = map.map_index
+		clicked_location = -1
+		clicked_loc_index = -1
+		
+		
+		mouseXY = map.mapFromGlobal(QtGui.QCursor.pos()) #qpoint
 		num_locations = len(map.map_locations)
-		
+	
 		for loc in map.map_locations:
 			if (loc.center - mouseXY).manhattanLength() < loc.radius:
-				#manhattanL is |x|+|y|, much easier than sqrt
 				clicked_loc_index = map.map_locations.index(loc)
+				#manhattanL is |x|+|y|, much easier than sqrt
+				#you get a diamond not a circle, but whatever
 				clicked_location = loc
 				break
 		if clicked_loc_index is -1:
 			print "not within location"
 			return
-		##clicked location found
 		
+		if player.armies > 0:
+			add_army_to_location()
+		elif player.move > 0:
+			move_armies()
+				
 		
-		#add armies test
-		add_army_to_location()
-		
-		
-		print_loc_info()
+		self.printout()
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	#Card methods
 	UIcards = []
@@ -134,9 +222,13 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 			return
 		costs = [0,1,1,2,2,3]
 		n = int(self.sender().text()) - 1
+		if player.coins < costs[n]:
+			print "not enough coins"
+			return
 		card = cards.pop(n)
 		player.addCard(card)
 		player.removeCoins(costs[n])
+		self.printout()
 	
 	def update_card_images(self):
 		for i in range(6):
@@ -175,7 +267,7 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 			card_selector.addWidget(card_button)
 		return card_selector
 	
-	map_objects = []
+	
 	
 	def get_maps(self):
 		maps = Maps.get_maps()
@@ -196,17 +288,13 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		
 		
 		textArea = QtGui.QLabel(self)
-		textArea.setText("example text for whatever")
+		textArea.setText("Current Player: 0")
 		self.text_bar = textArea
 		
-		text_btn = QtGui.QPushButton('change text', self)
-		text_btn.clicked.connect(self.update_text_bar)
-		
-		print_p_btn = QtGui.QPushButton('Print Player', self)
-		print_p_btn.clicked.connect(print_current_player)
+		text_btn = QtGui.QPushButton('Update Output', self)
+		text_btn.clicked.connect(self.printout)
 		
 		subVone.addLayout(card_selector)
-		subVone.addWidget(print_p_btn)
 		subVone.addWidget(textArea)
 		subVone.addWidget(text_btn)
 		
@@ -252,13 +340,26 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 	
 	
 	def print_board(self):
-		locales = ["left","center","right","bottom"]
+		locales = ["left  ","center","right ","bottom"]
 		for i in range(len(self.map_objects)):
 			map = self.map_objects[i]
-			for loc in map.map_locations:
-				printout = (loc.center.x(), loc.center.y(), locales[i], loc.armies)
-				print "armies at location %s,%s on %s map: %s" % printout
+			for k in range(len(map.map_locations)):
+				printout = (k, locales[i], map.map_locations[k].armies)
+				print "armies at location %s on %s map: %s" % printout
 			print
+	
+	def print_players(self):
+		print get_current_player().turn_print()
+		for player in players:
+			print player
+	
+	def printout(self):
+		self.update_text_bar()
+		os.system('clear')
+		self.print_players()
+		self.print_board()
+		print "Current Selected Territory: %s" % self.selected_territory
+		
 	
 	
 	#Non-UI methods
@@ -267,12 +368,8 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		if not current_player.has_taken_card:
 			print "please take a card"
 			return
-		print "previous player:"
-		print current_player
 		change_player()
-		print "current player:"
-		print get_current_player()
-		self.print_board()
+		self.printout()
 			
 	def __init__(self):
 		super(boardGUI, self).__init__()
