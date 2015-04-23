@@ -173,9 +173,14 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 					self.selected_territory = 0
 					player.move -= player.waterMovement
 		
-		
-		
-		
+		def add_castle_to_location():
+			if clicked_location.armies[current_player] < 1:
+				return
+			if clicked_location.castle[0] is not 0:
+				return
+			clicked_location.castle = [current_player]
+			player.castle -= 1
+			selected_territory = 0
 		
 		clicked_map_index = map.map_index
 		clicked_location = -1
@@ -200,6 +205,8 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 			add_army_to_location()
 		elif player.move > 0:
 			move_armies()
+		elif player.castle > 0:
+			add_castle_to_location()
 				
 		
 		self.printout()
@@ -208,8 +215,42 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 	
 	
 	
-	
-	
+	def calculate_winner(self):
+		os.system('clear')
+		victory_points = [0,0,0,0]
+		
+		#area control
+		for m in self.map_objects:
+			for location in m.map_locations:
+				most_armies = max(location.armies)
+				if location.armies.count(most_armies) > 1:
+					continue
+				victory_points[location.armies.index(most_armies)] += 1
+		
+		#cards
+		for index in range(4): #players
+			player = players[index]
+			cards = str(player.cards)
+			count = 0
+			for type in player.vp_categories:
+				if type == "3":
+					count += player.coins//3
+				elif type == "all":
+					if cards.count("Noble") == 3: count += 4
+				elif type == "both":
+					if cards.count("Mountain") == 2: count += 3
+				else:
+					count += cards.count(type)
+			victory_points[index] += count
+		
+		#elixer
+		elixers = map(lambda x: x.get_elixer(), players)
+		victory_points[elixers.index(max(elixers))] += 2
+			
+			
+			
+		print "Player %s is the Winner!!" % victory_points.index(max(victory_points))
+		sys.exit()
 	
 	
 	
@@ -237,9 +278,7 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 				icon = "%s%s.jpeg" % (self.cards_directory, image_name)
 				self.UIcards[i].setPixmap(QtGui.QPixmap(icon))
 			except IndexError:
-				for p in players:
-					print p
-				sys.exit()
+				self.calculate_winner()
 	
 	
 	#UI setup methods
@@ -304,7 +343,8 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		#right info area
 		subVtwo = QtGui.QVBoxLayout()
 		quitbtn = QtGui.QPushButton('Quit', self)
-		quitbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
+		#quitbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
+		quitbtn.clicked.connect(self.calculate_winner)
 		
 		EndTurnbtn = QtGui.QPushButton('End Turn', self)
 		EndTurnbtn.clicked.connect(self.end_turn)
@@ -344,8 +384,9 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 		for i in range(len(self.map_objects)):
 			map = self.map_objects[i]
 			for k in range(len(map.map_locations)):
-				printout = (k, locales[i], map.map_locations[k].armies)
-				print "armies at location %s on %s map: %s" % printout
+				location = map.map_locations[k]
+				printout = (k, locales[i], location.armies, location.castle)
+				print "armies at location %s on %s map: %s. Castle owner: %s" % printout
 			print
 	
 	def print_players(self):
@@ -373,20 +414,19 @@ class boardGUI(QtGui.QWidget): #cannot be QtGui.QMainWindow or button layout fai
 			
 	def __init__(self):
 		super(boardGUI, self).__init__()
-		self.initModel()
 		self.initUI()
-	
-	
-	def initModel(self):
-		populate_cards()
-		populate_players()
 		
 		
 	def initUI(self):
+		populate_cards()
+		populate_players()
 		self.layoutSetup()
 		self.setWindowTitle('Eight Minute Empire: Legends')
 		#self.setWindowIcon(QtGui.QIcon('web.png'))		this for title bar
 		self.move(200,200)
+		self.map_objects[1].map_locations[0].armies = [4,4,4,4]
+		self.map_objects[0].map_locations[0].armies = [1,1,1,1]
+		self.printout()
 		self.show()
 
 
